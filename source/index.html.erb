@@ -1,0 +1,113 @@
+<canvas id="canvas"></canvas>
+<script type="text/javascript">
+    // 取得視窗的寬跟高，等等下面的 function 會用到
+    var height = $(window).height();
+    var width = $(window).width();
+
+    // 設定 canvas 長度跟寬度，並隨著視窗大小改變
+    function setCanvasHeight() {
+
+      $("#canvas").attr("width", width);
+      $("#canvas").attr("height", height);
+    }
+
+    // 定義一個建立連續數字的 array 方法：Array.range(1, 10, 2)
+    // => [1, 3, 5, 7, 9]
+    // http://stackoverflow.com/questions/3895478/does-javascript-have-a-range-equivalent
+    Array.range = function (a, b, step) {
+        var A = [];
+        if (typeof a == 'number') {
+            A[0] = a;
+            step = step || 1;
+            while (a + step <= b) {
+                A[A.length] = a += step;
+            }
+        }
+        return A;
+    };
+
+    // 定義一個從 array 隨機取得元素的方法：$.rand()
+    // http://stackoverflow.com/questions/5915096/get-random-item-from-array-with-jquery
+    (function($) {
+        $.rand = function(arg) {
+            if ($.isArray(arg)) {
+                return arg[$.rand(arg.length)];
+            } else if (typeof arg === "number") {
+                return Math.floor(Math.random() * arg);
+            }
+        };
+    })(jQuery);
+
+    function drawMatrix() {
+
+        // 取得 canvas DOM
+        var canvas = $('#canvas')[0];
+        var dc = canvas.getContext("2d");
+
+        var charArray = [];
+        for (var i = 0; i < 110; i++) {
+            var charLengh = $.rand(Array.range(12, 35));
+            var spacing   = (Math.random() * 10) + (i * 13);
+            var speed     = Math.random() * 10 + 4;
+            var fontSize  = Math.random() * 20 + 8;
+            var tmp = [];
+            for (var charIndex = 0; charIndex < charLengh; charIndex++) {
+                var xLocation = spacing;
+                var yLocation = charIndex * 20 + 20;
+                tmp.push(new createChars(xLocation, yLocation, speed, fontSize));
+            }
+            charArray.push(tmp);
+        }
+
+        function createChars(xLoc, yLoc, yspeed, fontSize) {
+            this.xLocation = xLoc;
+            this.yLocation = -yLoc;
+            this.yDownDistance = yspeed;
+            this.size = fontSize;
+            this.text = String.fromCharCode(32 + $.rand(Array.range(5, 60)));
+        }
+
+        function drawIt() {
+            var canvasWidth = width;
+            var canvasHeight = height;
+            dc.globalCompositeOperation = "source-over";
+            dc.fillStyle = "hsla(0, 0%, 0%, .9)";
+            dc.fillRect(0, 0, canvasWidth, canvasHeight);
+            dc.globalCompositeOperation = "lighter";
+            for (var k = 0; k < charArray.length; k++) {
+                for (var m = 0; m < charArray[k].length; m++) {
+                    var charItem = charArray[k][m];
+                    var text = charItem.text;
+                    var xLocation = charItem.xLocation;
+                    var yLocation = charItem.yLocation;
+
+                    // 想做陰影的效果，可是跑起來太 Lag 了
+                    // dc.shadowColor = "hsla(110, 100%, 24%, .5)";
+                    // dc.shadowOffsetX = 1;
+                    // dc.shadowOffsetY = 0;
+                    // dc.shadowBlur = 3;
+
+                    var white = "hsla(0, 0%, 88%, .7)";
+                    var green = "hsla(120, 46%, 41%, .7)";
+
+                    dc.fillStyle = $.rand([white, green]);
+                    dc.font = "bold " + charItem.size+"px 'Helvetica Neue' 'Arial'";
+                    dc.fillText(text, xLocation, yLocation);
+                    dc.fill();
+                    charItem.yLocation += charItem.yDownDistance;
+                    if (charItem.yLocation > canvasHeight) { charItem.yLocation = 0; }
+                }
+            }
+        }
+        setInterval(drawIt, 33);
+    }
+
+    $(window).on("load", function () {
+      setCanvasHeight();
+      drawMatrix();
+    });
+
+    $(window).resize(function () {
+      setCanvasHeight();
+    });
+</script>
