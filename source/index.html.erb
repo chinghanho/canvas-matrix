@@ -39,20 +39,21 @@
     })(jQuery);
 
     function drawMatrix() {
-        var canvas = $('#canvas')[0];
-        var dc = canvas.getContext("2d");
+        var canvas = $('#canvas')[0],
+            dc     = canvas.getContext("2d");
 
         // 建立多個字串
         var charArray = [];
         for (var i = 0; i < 110; i++) {
-            var charLengh = $.rand(Array.range(12, 35));
-            var spacing   = (Math.random() * 10) + (i * 13);
-            var speed     = Math.random() * 10 + 4;
-            var fontSize  = Math.random() * 20 + 8;
+            var charLengh = $.rand(Array.range(12, 35)),
+                spacing   = (Math.random() * 10) + (i * 13),
+                speed     = Math.random() * 10 + 4,
+                fontSize  = Math.random() * 20 + 8;
+
             var tmp = [];
             for (var charIndex = 0; charIndex < charLengh; charIndex++) {
-                var xLocation = spacing;
-                var yLocation = charIndex * 20 + 20;
+                var xLocation = spacing,
+                    yLocation = charIndex * 20 + 20;
                 tmp.push(new createChars(xLocation, yLocation, speed, fontSize));
             }
             charArray.push(tmp);
@@ -68,18 +69,18 @@
 
         // 繪製 canvas
         function drawIt() {
-            var canvasWidth = width;
-            var canvasHeight = height;
+            var canvasWidth = width,
+                canvasHeight = height;
             dc.globalCompositeOperation = "source-over";
             dc.fillStyle = "hsla(0, 0%, 0%, .9)";
             dc.fillRect(0, 0, canvasWidth, canvasHeight);
             dc.globalCompositeOperation = "lighter";
             for (var k = 0; k < charArray.length; k++) {
                 for (var m = 0; m < charArray[k].length; m++) {
-                    var charItem = charArray[k][m];
-                    var text = charItem.text;
-                    var xLocation = charItem.xLocation;
-                    var yLocation = charItem.yLocation;
+                    var charItem  = charArray[k][m],
+                        text      = charItem.text,
+                        xLocation = charItem.xLocation,
+                        yLocation = charItem.yLocation;
 
                     // 想做陰影的效果，可是跑起來太 lag 了…… orz
                     // dc.shadowColor = "hsla(110, 100%, 24%, .5)";
@@ -87,8 +88,8 @@
                     // dc.shadowOffsetY = 0;
                     // dc.shadowBlur = 3;
 
-                    var white = "hsla(0, 0%, 88%, .7)";
-                    var green = "hsla(120, 46%, 41%, .7)";
+                    var white = "hsla(0, 0%, 88%, .7)",
+                        green = "hsla(120, 46%, 41%, .7)";
 
                     dc.fillStyle = $.rand([white, green]);
                     dc.font = "bold " + charItem.size+"px 'Helvetica Neue' 'Arial'";
